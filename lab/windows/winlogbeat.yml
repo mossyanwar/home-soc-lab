@@ -1,0 +1,29 @@
+# home-soc-lab: Winlogbeat 8.x config for WIN-EP01
+# Not tested in this repo.
+#
+# Install Winlogbeat to C:\Program Files\Winlogbeat, copy this file over the
+# default winlogbeat.yml, put the lab CA certificate at
+# C:\ProgramData\winlogbeat\ca.crt and store the shipper password in the
+# keystore rather than in this file:
+#   .\winlogbeat.exe keystore create
+#   .\winlogbeat.exe keystore add SHIPPER_PASSWORD
+
+winlogbeat.event_logs:
+  - name: Microsoft-Windows-Sysmon/Operational
+  - name: Security
+  - name: System
+  - name: Microsoft-Windows-PowerShell/Operational
+    event_id: 4103, 4104
+  - name: Microsoft-Windows-WMI-Activity/Operational
+
+output.elasticsearch:
+  hosts: ["https://10.10.50.10:9200"]
+  username: "soclab_shipper"
+  password: "${SHIPPER_PASSWORD}"
+  ssl.certificate_authorities: ["C:/ProgramData/winlogbeat/ca.crt"]
+
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: C:/ProgramData/winlogbeat/logs
+  keepfiles: 7
