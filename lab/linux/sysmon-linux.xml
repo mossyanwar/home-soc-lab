@@ -1,0 +1,70 @@
+<!--
+  home-soc-lab: Sysmon for Linux configuration for UBU-SRV01
+
+  Schema and event choices follow microsoft/MSTIC-Sysmon (MIT licence,
+  https://github.com/microsoft/MSTIC-Sysmon/tree/main/linux/configs).
+  Rewritten and cut down for this lab.
+
+  Not tested in this repo. Install Sysmon for Linux from the Microsoft package
+  repository, then:
+    sudo sysmon -accepteula -i sysmon-linux.xml
+  Events go to syslog / journald with the identifier "sysmon"; each one is a
+  single line of XML, which `soclab normalise -f sysmon-xml` reads.
+-->
+<Sysmon schemaversion="4.81">
+  <EventFiltering>
+
+    <!-- Event ID 1: process creation. Log everything.
+         Rules: lnx_proc_shell_spawned_by_java, lnx_proc_download_piped_to_shell -->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessCreate onmatch="exclude"/>
+    </RuleGroup>
+
+    <!-- Event ID 3: network connections from shells, download tools,
+         interpreters and the JVM. Rule: lnx_net_shell_outbound_connection -->
+    <RuleGroup name="" groupRelation="or">
+      <NetworkConnect onmatch="include">
+        <Image condition="end with">/bash</Image>
+        <Image condition="end with">/dash</Image>
+        <Image condition="end with">/sh</Image>
+        <Image condition="end with">/zsh</Image>
+        <Image condition="end with">/curl</Image>
+        <Image condition="end with">/wget</Image>
+        <Image condition="end with">/nc</Image>
+        <Image condition="end with">/ncat</Image>
+        <Image condition="end with">/socat</Image>
+        <Image condition="contains">python</Image>
+        <Image condition="end with">/perl</Image>
+        <Image condition="end with">/java</Image>
+      </NetworkConnect>
+    </RuleGroup>
+
+    <!-- Event ID 5: process terminated. Off. -->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessTerminate onmatch="include"/>
+    </RuleGroup>
+
+    <!-- Event ID 11: file created. Persistence locations and web roots.
+         Rules: lnx_file_ssh_authorized_keys_write, lnx_file_jsp_written_by_java -->
+    <RuleGroup name="" groupRelation="or">
+      <FileCreate onmatch="include">
+        <TargetFilename condition="begin with">/etc/cron</TargetFilename>
+        <TargetFilename condition="begin with">/var/spool/cron/</TargetFilename>
+        <TargetFilename condition="begin with">/etc/systemd/system/</TargetFilename>
+        <TargetFilename condition="end with">/authorized_keys</TargetFilename>
+        <TargetFilename condition="end with">/authorized_keys2</TargetFilename>
+        <TargetFilename condition="is">/etc/ld.so.preload</TargetFilename>
+        <TargetFilename condition="contains">/webapps/</TargetFilename>
+        <TargetFilename condition="begin with">/var/www/</TargetFilename>
+        <TargetFilename condition="begin with">/tmp/</TargetFilename>
+        <TargetFilename condition="begin with">/dev/shm/</TargetFilename>
+      </FileCreate>
+    </RuleGroup>
+
+    <!-- Event ID 23: file delete. Off, the archive fills the disk. -->
+    <RuleGroup name="" groupRelation="or">
+      <FileDelete onmatch="include"/>
+    </RuleGroup>
+
+  </EventFiltering>
+</Sysmon>

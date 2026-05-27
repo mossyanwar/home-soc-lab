@@ -1,0 +1,217 @@
+<!--
+  home-soc-lab: Sysmon configuration for WIN-EP01
+
+  This is a trimmed rewrite, not a copy. The layout (one RuleGroup per event
+  type, include lists for noisy event types, exclude lists for rare ones) and a
+  few of the exclusions follow:
+    - SwiftOnSecurity/sysmon-config, Creative Commons Attribution 4.0
+      https://github.com/SwiftOnSecurity/sysmon-config
+    - olafhartong/sysmon-modular, MIT licence
+      https://github.com/olafhartong/sysmon-modular
+  Changes from those sources: cut down to the event types and paths the rules in
+  detections/ rely on, plus a small baseline for investigations. Most of their
+  per-application exclusions were dropped because a lab endpoint runs very
+  little software.
+
+  Not tested in this repo. To load it on the endpoint:
+    sysmon64.exe -accepteula -i sysmon-config.xml
+  and to update a running install:
+    sysmon64.exe -c sysmon-config.xml
+
+  Schema 4.50 is accepted by Sysmon 13 and later, including current 15.x builds.
+-->
+<Sysmon schemaversion="4.50">
+  <HashAlgorithms>sha256,IMPHASH</HashAlgorithms>
+  <CheckRevocation/>
+  <EventFiltering>
+
+    <!-- Event ID 1: process creation. Log everything except a short list of
+         known noisy system processes. Rules: most of detections/windows. -->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessCreate onmatch="exclude">
+        <CommandLine condition="is">\??\C:\Windows\system32\conhost.exe 0xffffffff -ForceV1</CommandLine>
+        <CommandLine condition="begin with">C:\Windows\system32\SearchIndexer.exe /Embedding</CommandLine>
+        <ParentImage condition="is">C:\Windows\System32\SearchIndexer.exe</ParentImage>
+        <Image condition="is">C:\Windows\System32\backgroundTaskHost.exe</Image>
+        <Image condition="is">C:\Windows\System32\CompatTelRunner.exe</Image>
+      </ProcessCreate>
+    </RuleGroup>
+
+    <!-- Event ID 2: file creation time changed. Only where timestomping would
+         matter most: user-writable places executables run from. -->
+    <RuleGroup name="" groupRelation="or">
+      <FileCreateTime onmatch="include">
+        <TargetFilename condition="begin with">C:\Users\</TargetFilename>
+        <TargetFilename condition="begin with">C:\ProgramData\</TargetFilename>
+      </FileCreateTime>
+    </RuleGroup>
+
+    <!-- Event ID 3: network connections. Only script hosts and signed binaries
+         that are often used to download or proxy payloads. -->
+    <RuleGroup name="" groupRelation="or">
+      <NetworkConnect onmatch="include">
+        <Image condition="end with">\powershell.exe</Image>
+        <Image condition="end with">\pwsh.exe</Image>
+        <Image condition="end with">\mshta.exe</Image>
+        <Image condition="end with">\regsvr32.exe</Image>
+        <Image condition="end with">\rundll32.exe</Image>
+        <Image condition="end with">\bitsadmin.exe</Image>
+        <Image condition="end with">\certutil.exe</Image>
+        <Image condition="end with">\cmstp.exe</Image>
+        <Image condition="end with">\msbuild.exe</Image>
+        <Image condition="end with">\wscript.exe</Image>
+        <Image condition="end with">\cscript.exe</Image>
+        <Image condition="end with">\cmd.exe</Image>
+        <DestinationPort condition="is">4444</DestinationPort>
+      </NetworkConnect>
+    </RuleGroup>
+
+    <!-- Event ID 5: process terminated. Off. -->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessTerminate onmatch="include"/>
+    </RuleGroup>
+
+    <!-- Event ID 6: driver loaded. Log everything not signed by Microsoft. -->
+    <RuleGroup name="" groupRelation="or">
+      <DriverLoad onmatch="exclude">
+        <Signature condition="contains">Microsoft</Signature>
+        <Signature condition="contains">Windows</Signature>
+      </DriverLoad>
+    </RuleGroup>
+
+    <!-- Event ID 7: image loaded. Very noisy, so only a few DLLs that matter for
+         the techniques in attacks/plan.md (comsvcs MiniDump, scriptlets). -->
+    <RuleGroup name="" groupRelation="or">
+      <ImageLoad onmatch="include">
+        <ImageLoaded condition="end with">\comsvcs.dll</ImageLoaded>
+        <ImageLoaded condition="end with">\scrobj.dll</ImageLoaded>
+        <ImageLoaded condition="end with">\dbgcore.dll</ImageLoaded>
+      </ImageLoad>
+    </RuleGroup>
+
+    <!-- Event ID 8: CreateRemoteThread. Rare on a quiet endpoint, log all. -->
+    <RuleGroup name="" groupRelation="or">
+      <CreateRemoteThread onmatch="exclude"/>
+    </RuleGroup>
+
+    <!-- Event ID 9: raw disk access. Off. -->
+    <RuleGroup name="" groupRelation="or">
+      <RawAccessRead onmatch="include"/>
+    </RuleGroup>
+
+    <!-- Event ID 10: process access. Only handles opened to lsass.exe. The
+         exclusions are a known blind spot: anything injected into or
+         masquerading as these processes will not be logged. -->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessAccess onmatch="include">
+        <TargetImage condition="end with">\lsass.exe</TargetImage>
+      </ProcessAccess>
+    </RuleGroup>
+    <RuleGroup name="" groupRelation="or">
+      <ProcessAccess onmatch="exclude">
+        <SourceImage condition="is">C:\Windows\system32\wininit.exe</SourceImage>
+        <SourceImage condition="is">C:\Windows\system32\csrss.exe</SourceImage>
+        <SourceImage condition="begin with">C:\ProgramData\Microsoft\Windows Defender\Platform\</SourceImage>
+      </ProcessAccess>
+    </RuleGroup>
+
+    <!-- Event ID 11: file created. Startup folders, scheduled task files,
+         memory dumps and script files dropped in temp or public folders. -->
+    <RuleGroup name="" groupRelation="or">
+      <FileCreate onmatch="include">
+        <TargetFilename condition="contains">\Start Menu\Programs\Startup\</TargetFilename>
+        <TargetFilename condition="begin with">C:\Windows\System32\Tasks\</TargetFilename>
+        <TargetFilename condition="begin with">C:\Windows\Tasks\</TargetFilename>
+        <TargetFilename condition="end with">.dmp</TargetFilename>
+        <TargetFilename condition="end with">\ntds.dit</TargetFilename>
+        <TargetFilename condition="contains">\AppData\Local\Temp\</TargetFilename>
+        <TargetFilename condition="begin with">C:\Users\Public\</TargetFilename>
+        <TargetFilename condition="begin with">C:\ProgramData\</TargetFilename>
+      </FileCreate>
+    </RuleGroup>
+    <RuleGroup name="" groupRelation="or">
+      <FileCreate onmatch="exclude">
+        <!-- browser and update caches in Temp are very noisy -->
+        <TargetFilename condition="end with">.tmp</TargetFilename>
+        <TargetFilename condition="end with">.etl</TargetFilename>
+        <TargetFilename condition="end with">.log</TargetFilename>
+      </FileCreate>
+    </RuleGroup>
+
+    <!-- Event IDs 12, 13, 14: registry. Autostart locations, services, the
+         shell\open\command keys abused for UAC bypass, and audit settings an
+         attacker might switch off. Rules: win_reg_run_key_suspicious_value,
+         win_reg_uac_bypass_shell_open_command. -->
+    <RuleGroup name="" groupRelation="or">
+      <RegistryEvent onmatch="include">
+        <TargetObject condition="contains">\CurrentVersion\Run</TargetObject>
+        <TargetObject condition="contains">\Policies\Explorer\Run</TargetObject>
+        <TargetObject condition="contains">\Microsoft\Windows NT\CurrentVersion\Winlogon\</TargetObject>
+        <TargetObject condition="contains">\Image File Execution Options\</TargetObject>
+        <TargetObject condition="begin with">HKLM\System\CurrentControlSet\Services\</TargetObject>
+        <TargetObject condition="contains">\ms-settings\shell\open\command</TargetObject>
+        <TargetObject condition="contains">\Folder\shell\open\command</TargetObject>
+        <TargetObject condition="contains">\exefile\shell\open\command</TargetObject>
+        <TargetObject condition="contains">\mscfile\shell\open\command</TargetObject>
+        <TargetObject condition="contains">\Policies\System\Audit\ProcessCreationIncludeCmdLine_Enabled</TargetObject>
+        <TargetObject condition="contains">\Control\Lsa\</TargetObject>
+        <TargetObject condition="contains">\Microsoft\Windows Defender\</TargetObject>
+      </RegistryEvent>
+    </RuleGroup>
+    <!-- No registry exclusions on purpose: the obvious candidate, service
+         "Start" value churn, is also how the EventLog service gets disabled. -->
+
+    <!-- Event ID 15: alternate data streams. Mark-of-the-web on scripts and HTAs. -->
+    <RuleGroup name="" groupRelation="or">
+      <FileCreateStreamHash onmatch="include">
+        <TargetFilename condition="end with">.hta</TargetFilename>
+        <TargetFilename condition="end with">.ps1</TargetFilename>
+        <TargetFilename condition="end with">.vbs</TargetFilename>
+        <TargetFilename condition="end with">.js</TargetFilename>
+        <TargetFilename condition="end with">.exe</TargetFilename>
+      </FileCreateStreamHash>
+    </RuleGroup>
+
+    <!-- Event IDs 17, 18: named pipes. Pipe names used by common remote
+         execution tools. -->
+    <RuleGroup name="" groupRelation="or">
+      <PipeEvent onmatch="include">
+        <PipeName condition="begin with">\PSEXESVC</PipeName>
+        <PipeName condition="begin with">\RemCom</PipeName>
+        <PipeName condition="begin with">\paexec</PipeName>
+      </PipeEvent>
+    </RuleGroup>
+
+    <!-- Event IDs 19, 20, 21: WMI event filters, consumers and bindings. Rare,
+         log all. Rule: win_wmi_commandline_event_consumer. -->
+    <RuleGroup name="" groupRelation="or">
+      <WmiEvent onmatch="exclude"/>
+    </RuleGroup>
+
+    <!-- Event ID 22: DNS queries. Log all except the busiest Microsoft
+         update and telemetry domains. -->
+    <RuleGroup name="" groupRelation="or">
+      <DnsQuery onmatch="exclude">
+        <QueryName condition="end with">.windowsupdate.com</QueryName>
+        <QueryName condition="end with">.update.microsoft.com</QueryName>
+        <QueryName condition="end with">.events.data.microsoft.com</QueryName>
+      </DnsQuery>
+    </RuleGroup>
+
+    <!-- Event ID 23: file delete with archiving. Off, it fills the disk. -->
+    <RuleGroup name="" groupRelation="or">
+      <FileDelete onmatch="include"/>
+    </RuleGroup>
+
+    <!-- Event ID 24: clipboard. Off. -->
+    <RuleGroup name="" groupRelation="or">
+      <ClipboardChange onmatch="include"/>
+    </RuleGroup>
+
+    <!-- Event ID 25: process tampering (hollowing, herpaderping). Log all. -->
+    <RuleGroup name="" groupRelation="or">
+      <ProcessTampering onmatch="exclude"/>
+    </RuleGroup>
+
+  </EventFiltering>
+</Sysmon>

@@ -1,0 +1,43 @@
+# home-soc-lab: Filebeat 8.x config for UBU-SRV01
+# Not tested in this repo.
+#
+# Ships three things to SIEM01:
+#   - auditd records from /var/log/audit/audit.log (auditd module)
+#   - sshd authentication logs (system module, auth fileset)
+#   - Sysmon for Linux events from journald; each is a line of Windows-style
+#     event XML, decoded into winlog.* fields by decode_xml_wineventlog
+#
+# Put the lab CA at /etc/filebeat/ca.crt and the shipper password in the keystore:
+#   sudo filebeat keystore create
+#   sudo filebeat keystore add SHIPPER_PASSWORD
+
+filebeat.modules:
+  - module: auditd
+    log:
+      enabled: true
+      var.paths: ["/var/log/audit/audit.log*"]
+  - module: system
+    auth:
+      enabled: true
+    syslog:
+      enabled: false
+
+filebeat.inputs:
+  - type: journald
+    id: sysmon-linux
+    include_matches.match:
+      - "SYSLOG_IDENTIFIER=sysmon"
+    tags: ["sysmon-linux"]
+    processors:
+      - decode_xml_wineventlog:
+          field: message
+          target_field: winlog
+          ignore_failure: true
+
+output.elasticsearch:
+  hosts: ["https://10.10.50.10:9200"]
+  username: "soclab_shipper"
+  password: "${SHIPPER_PASSWORD}"
+  ssl.certificate_authorities: ["/etc/filebeat/ca.crt"]
+
+logging.level: info

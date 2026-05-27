@@ -13,3 +13,6 @@ data/events/
 
 # local engine output
 out/
+
+# local secrets for the lab compose file
+lab/siem/.env
