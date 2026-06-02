@@ -1,0 +1,7 @@
+# Pinned to what this repo was built and tested with (Python 3.12).
+# The evaluator and the tests need only PyYAML; the rest is for `soclab convert`.
+PyYAML==6.0.3
+pytest==9.1.1
+pySigma==1.5.1
+pySigma-backend-splunk==2.1.0
+pySigma-backend-elasticsearch==2.1.1
