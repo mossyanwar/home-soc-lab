@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "soclab"
+version = "0.1.0"
+description = "A small Sigma evaluator and CLI for the home SOC lab"
+requires-python = ">=3.12"
+readme = "engine/README.md"
+license = { text = "MIT" }
+dependencies = [
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+# Rule-to-query conversion. Optional: the evaluator and tests work without it.
+convert = [
+    "pysigma>=0.11",
+    "pysigma-backend-splunk>=1.1",
+    "pysigma-backend-elasticsearch>=1.1",
+]
+dev = [
+    "pytest>=8",
+]
+
+[project.scripts]
+soclab = "soclab.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "engine" }
+
+[tool.setuptools.packages.find]
+where = ["engine"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
