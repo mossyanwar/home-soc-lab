@@ -1,0 +1,45 @@
+title: Run key value pointing at a script host or encoded command
+id: 8c2f1a46-9b3d-4e02-a7c5-1d6b4f9e2a07
+status: experimental
+description: >
+  Detects a value written under a CurrentVersion\Run or Policies\Explorer\Run
+  key where the value data launches a script interpreter or an encoded command.
+  Registry Run keys are a classic autostart persistence location; most
+  legitimate entries point directly at an application, not at powershell, cmd,
+  wscript or an inline script. Atomic Red Team T1547.001.
+references:
+  - https://attack.mitre.org/techniques/T1547/001/
+author: mossyanwar
+date: 2026-06-07
+logsource:
+  product: windows
+  category: registry_set
+detection:
+  selection_key:
+    TargetObject|contains:
+      - '\CurrentVersion\Run\'
+      - '\CurrentVersion\Policies\Explorer\Run\'
+  selection_value:
+    Details|contains:
+      - 'powershell'
+      - 'pwsh'
+      - 'cmd.exe'
+      - 'cmd /c'
+      - 'wscript'
+      - 'cscript'
+      - 'mshta'
+      - 'rundll32'
+      - 'regsvr32'
+      - '-enc'
+      - 'IEX'
+      - 'Invoke-Expression'
+      - '.vbs'
+      - '.js'
+  condition: selection_key and selection_value
+falsepositives:
+  - Some software legitimately runs a helper script at logon. Baseline the Run
+    key values present on a clean build and alert on new ones.
+level: high
+tags:
+  - attack.persistence
+  - attack.t1547.001

@@ -1,0 +1,39 @@
+title: Service installed with a script host or encoded command in its ImagePath
+id: 7f2a9c18-5b43-4d1e-8a07-3c6b2f1d9e0a
+status: experimental
+description: >
+  Detects a System event 7045 (service installed) whose ImagePath runs cmd or
+  a PowerShell command rather than a normal service binary. Remote execution
+  tools such as PsExec and Empire's smbexec create a short-lived service whose
+  ImagePath is a %COMSPEC% / powershell one-liner. Atomic Red Team T1569.002
+  and T1543.003.
+references:
+  - https://attack.mitre.org/techniques/T1569/002/
+  - https://attack.mitre.org/techniques/T1543/003/
+author: mossyanwar
+date: 2026-06-07
+logsource:
+  product: windows
+  service: system
+detection:
+  selection:
+    EventID: 7045
+    ImagePath|contains:
+      - '%COMSPEC%'
+      - 'cmd.exe /c'
+      - 'cmd /c'
+      - 'powershell'
+      - 'pwsh'
+      - '-enc'
+      - 'rundll32'
+  condition: selection
+falsepositives:
+  - A few legitimate installers register a service that wraps a command. These
+    tend to be stable and can be baselined; an interactive, randomly named
+    service with an encoded PowerShell ImagePath is not legitimate.
+level: high
+tags:
+  - attack.execution
+  - attack.lateral-movement
+  - attack.t1569.002
+  - attack.t1543.003

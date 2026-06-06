@@ -1,0 +1,29 @@
+title: File download with bitsadmin transfer
+id: 9e3c2a17-8d46-4b5f-9c09-5e7a4d3f2a0c
+status: experimental
+description: >
+  Detects bitsadmin.exe creating a transfer job, a signed-binary way to
+  download a file in the background that avoids a direct network call from the
+  malware itself. Atomic Red Team T1197 / T1105.
+references:
+  - https://attack.mitre.org/techniques/T1197/
+  - https://lolbas-project.github.io/lolbas/Binaries/Bitsadmin/
+author: mossyanwar
+date: 2026-06-07
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\bitsadmin.exe'
+    CommandLine|contains: '/transfer'
+  condition: selection
+falsepositives:
+  - Some software update routines use bitsadmin. Baseline the download URLs and
+    destination paths that are normal for the host.
+level: medium
+tags:
+  - attack.defense-evasion
+  - attack.command-and-control
+  - attack.t1197
+  - attack.t1105

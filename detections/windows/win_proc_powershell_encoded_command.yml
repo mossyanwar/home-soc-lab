@@ -1,0 +1,31 @@
+title: PowerShell encoded command
+id: 1e9a4c7b-3d82-4f6a-b5c1-7a2e9d0f3b06
+status: experimental
+description: >
+  Detects powershell.exe running an -EncodedCommand (base64) payload. Encoding
+  the command hides its content from shoulder-surfing of the command line and
+  is used by most PowerShell-based loaders, including the Empire launchers in
+  the lab datasets. Covers Atomic Red Team T1059.001.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+author: mossyanwar
+date: 2026-06-07
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_img:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_enc:
+    CommandLine|re: '\s-[eE][ncodeman]{0,13}\s+[A-Za-z0-9+/=]{20,}'
+  condition: selection_img and selection_enc
+falsepositives:
+  - A few management tools and installers pass short encoded commands; the
+    20-character minimum on the base64 blob cuts most of those out. Baseline
+    the ones that remain.
+level: medium
+tags:
+  - attack.execution
+  - attack.t1059.001

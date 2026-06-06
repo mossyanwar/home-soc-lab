@@ -1,0 +1,29 @@
+title: Mshta executing an inline script
+id: 4d6c2b89-1a3f-4e7c-8d05-9b2e1f4a7c04
+status: experimental
+description: >
+  Detects mshta.exe running a javascript: or vbscript: URL on the command line,
+  used to proxy execution of a remote scriptlet or an inline command through a
+  signed Windows binary. Atomic Red Team T1218.005 tests 1 and 2.
+references:
+  - https://attack.mitre.org/techniques/T1218/005/
+  - https://lolbas-project.github.io/lolbas/Binaries/Mshta/
+author: mossyanwar
+date: 2026-06-07
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection:
+    Image|endswith: '\mshta.exe'
+    CommandLine|contains:
+      - 'javascript:'
+      - 'vbscript:'
+      - 'about:'
+  condition: selection
+falsepositives:
+  - "Some enterprise line-of-business apps still ship HTA files, but they are launched by path, not with an inline javascript: or vbscript: scheme."
+level: high
+tags:
+  - attack.defense-evasion
+  - attack.t1218.005

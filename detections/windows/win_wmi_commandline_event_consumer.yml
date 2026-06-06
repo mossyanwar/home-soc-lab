@@ -1,0 +1,36 @@
+title: WMI CommandLineEventConsumer running a script host
+id: 5d1b8c27-4a39-4e7b-9c08-2f6a3d1e7b09
+status: experimental
+description: >
+  Detects a Sysmon WmiEvent for a CommandLineEventConsumer whose destination
+  command launches a script interpreter. A permanent WMI event subscription
+  (filter plus CommandLineEventConsumer plus binding) is a stealthy, fileless
+  persistence and privilege-execution mechanism. Atomic Red Team T1546.003.
+references:
+  - https://attack.mitre.org/techniques/T1546/003/
+author: mossyanwar
+date: 2026-06-07
+logsource:
+  product: windows
+  category: wmi_event
+detection:
+  selection:
+    EventID: 20
+    Destination|contains:
+      - 'powershell'
+      - 'pwsh'
+      - 'cmd.exe'
+      - 'wscript'
+      - 'cscript'
+      - 'mshta'
+      - 'rundll32'
+      - '-enc'
+  condition: selection
+falsepositives:
+  - Monitoring and management products (SCCM, some backup agents) create WMI
+    consumers. Baseline the consumer names that exist on a clean build.
+level: high
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1546.003
