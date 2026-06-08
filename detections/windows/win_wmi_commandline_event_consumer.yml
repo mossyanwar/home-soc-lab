@@ -9,7 +9,7 @@ description: >
 references:
   - https://attack.mitre.org/techniques/T1546/003/
 author: mossyanwar
-date: 2026-06-07
+date: 2026-06-08
 logsource:
   product: windows
   category: wmi_event

@@ -1,0 +1,27 @@
+title: Base64 decoding on the command line
+id: a7c0e3d8-9b12-4f47-9068-2c7d8b3e0f16
+status: experimental
+description: >
+  Detects an execve of base64 with the decode flag in auditd records.
+  Attackers decode base64 to reconstruct a payload or command on the host and
+  slip it past command-line inspection. Atomic Red Team T1140 test 5.
+references:
+  - https://attack.mitre.org/techniques/T1140/
+author: mossyanwar
+date: 2026-06-08
+logsource:
+  product: linux
+  service: auditd
+detection:
+  selection:
+    type: 'EXECVE'
+    a0|endswith: 'base64'
+    a1: '-d'
+  condition: selection
+falsepositives:
+  - Some scripts and package tooling decode base64 for benign reasons. The
+    value is in correlating it with what was decoded and what ran next.
+level: low
+tags:
+  - attack.defense-evasion
+  - attack.t1140

@@ -1,0 +1,28 @@
+title: Local account created with useradd or adduser
+id: f6b9d2c7-8a01-4e36-9f57-1b6c7a2d9e15
+status: experimental
+description: >
+  Detects the useradd or adduser commands in auditd process-title records. New
+  local accounts are a simple persistence and privilege mechanism. Atomic Red
+  Team T1136.001. The regular expression anchors on the start of the command,
+  a path separator, or a sudo prefix so that a grep whose pattern merely
+  contains the word "useradd" does not match.
+references:
+  - https://attack.mitre.org/techniques/T1136/001/
+author: mossyanwar
+date: 2026-06-08
+logsource:
+  product: linux
+  service: auditd
+detection:
+  selection:
+    type: 'PROCTITLE'
+    proctitle|re: '(^|/|sudo )(useradd|adduser)\b'
+  condition: selection
+falsepositives:
+  - Administrators create accounts legitimately. Correlate with who was logged
+    in (auid) and whether the account creation was expected.
+level: medium
+tags:
+  - attack.persistence
+  - attack.t1136.001

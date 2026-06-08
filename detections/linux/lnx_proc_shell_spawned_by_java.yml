@@ -1,0 +1,37 @@
+title: Shell spawned by a Java process
+id: a1c4e7d2-3b56-4f81-9a02-6c1e2b7d4f10
+status: experimental
+description: >
+  Detects an interactive shell launched directly by a Java process, which is
+  what happens when a web application running on the JVM (Tomcat, Spring) is
+  exploited and the server-side process is made to run a command. Seen in the
+  Log4Shell and Spring4Shell public datasets. Maps to T1190 followed by
+  T1059.004.
+references:
+  - https://attack.mitre.org/techniques/T1190/
+  - https://attack.mitre.org/techniques/T1059/004/
+author: mossyanwar
+date: 2026-06-08
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection:
+    ParentImage|contains: 'java'
+    Image|endswith:
+      - '/bash'
+      - '/dash'
+      - '/sh'
+      - '/zsh'
+      - '/ksh'
+  condition: selection
+falsepositives:
+  - A Java application that legitimately shells out (to run a helper script or
+    a system command) will match. Baseline which applications do this on the
+    host and which commands they run.
+level: high
+tags:
+  - attack.initial-access
+  - attack.execution
+  - attack.t1190
+  - attack.t1059.004
