@@ -1,0 +1,32 @@
+title: UAC bypass via shell open command hijack
+id: 3a7e9d15-2c84-4b1f-8e06-5f2a7c1d9b08
+status: experimental
+description: >
+  Detects writes to the per-user shell\open\command keys of auto-elevating
+  handlers (ms-settings, mscfile, Folder, exefile). Setting the (Default) value
+  and an empty DelegateExecute here, then launching fodhelper, sdclt, eventvwr
+  or computerdefaults, runs the attacker command elevated without a UAC prompt.
+  Atomic Red Team T1548.002 tests 3 and 7.
+references:
+  - https://attack.mitre.org/techniques/T1548/002/
+author: mossyanwar
+date: 2026-06-08
+logsource:
+  product: windows
+  category: registry_event
+detection:
+  selection:
+    TargetObject|contains:
+      - '\ms-settings\shell\open\command'
+      - '\mscfile\shell\open\command'
+      - '\Folder\shell\open\command'
+      - '\exefile\shell\open\command'
+  condition: selection
+falsepositives:
+  - These HKCU Classes keys are essentially never written by legitimate
+    software. A hit is worth investigating every time.
+level: high
+tags:
+  - attack.privilege-escalation
+  - attack.defense-evasion
+  - attack.t1548.002

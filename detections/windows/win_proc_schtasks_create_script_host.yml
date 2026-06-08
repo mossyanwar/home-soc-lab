@@ -1,0 +1,41 @@
+title: Scheduled task created to run a script host
+id: 2b8d1f49-6c35-4a2e-9b08-4d7a3c2f1e0b
+status: experimental
+description: >
+  Detects schtasks.exe creating a task whose action runs PowerShell, cmd or
+  another script host, or an encoded command. Scheduled tasks are a common
+  persistence and execution mechanism. Atomic Red Team T1053.005.
+references:
+  - https://attack.mitre.org/techniques/T1053/005/
+author: mossyanwar
+date: 2026-06-08
+logsource:
+  product: windows
+  category: process_creation
+detection:
+  selection_cmd:
+    Image|endswith: '\schtasks.exe'
+    CommandLine|contains: '/create'
+  selection_action:
+    CommandLine|contains:
+      - 'powershell'
+      - 'pwsh'
+      - 'cmd /c'
+      - 'cmd.exe /c'
+      - 'wscript'
+      - 'cscript'
+      - 'mshta'
+      - 'rundll32'
+      - '-enc'
+      - 'IEX'
+      - 'FromBase64String'
+  condition: selection_cmd and selection_action
+falsepositives:
+  - Administrators and software create scheduled tasks that call scripts.
+    Baseline the task names on a clean build; a task that runs an encoded
+    command or decodes base64 from the registry is suspicious on its own.
+level: medium
+tags:
+  - attack.persistence
+  - attack.execution
+  - attack.t1053.005
