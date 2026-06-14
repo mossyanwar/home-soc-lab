@@ -1,0 +1,38 @@
+title: Download piped straight to a shell
+id: b2d5f8e3-4c67-4a92-8b13-7d2e3c8e5a11
+status: experimental
+description: >
+  Detects a command line that downloads with curl or wget and pipes the output
+  straight into a shell, the "curl | bash" pattern used by droppers and
+  coin-miner installers. Atomic Red Team T1059.004 test 12 and T1105 test 27.
+references:
+  - https://attack.mitre.org/techniques/T1105/
+  - https://attack.mitre.org/techniques/T1059/004/
+author: mossyanwar
+date: 2026-06-14
+logsource:
+  product: linux
+  category: process_creation
+detection:
+  selection_tool:
+    CommandLine|contains:
+      - 'curl'
+      - 'wget'
+  selection_pipe:
+    CommandLine|contains:
+      - '|bash'
+      - '| bash'
+      - '|sh'
+      - '| sh'
+      - '|/bin/bash'
+      - '|/bin/sh'
+  condition: selection_tool and selection_pipe
+falsepositives:
+  - Some install scripts documented by vendors use curl piped to a shell. It is
+    still worth reviewing on a server that should not be fetching code.
+level: high
+tags:
+  - attack.execution
+  - attack.command-and-control
+  - attack.t1105
+  - attack.t1059.004

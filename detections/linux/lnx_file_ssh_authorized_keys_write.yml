@@ -1,0 +1,28 @@
+title: Write to an SSH authorized_keys file
+id: e5a8c1b6-7f90-4d25-9e46-0a5b6f1c8d14
+status: experimental
+description: >
+  Detects a write to an authorized_keys file. Adding a public key here gives an
+  attacker a persistent, password-less way back in and is a common post-access
+  step. Atomic Red Team T1098.004.
+references:
+  - https://attack.mitre.org/techniques/T1098/004/
+author: mossyanwar
+date: 2026-06-14
+logsource:
+  product: linux
+  category: file_event
+detection:
+  selection:
+    TargetFilename|endswith:
+      - '/authorized_keys'
+      - '/authorized_keys2'
+  condition: selection
+falsepositives:
+  - ssh-copy-id, cloud-init and configuration management (Ansible, Puppet) all
+    write this file legitimately. Baseline the accounts and tools that do so;
+    a write by a web-server or database account is not expected.
+level: medium
+tags:
+  - attack.persistence
+  - attack.t1098.004

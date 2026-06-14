@@ -7,7 +7,7 @@ public dataset in the last column instead (see `data/README.md`).
 
 Atomic Red Team test numbers change when tests are added upstream; the GUIDs do
 not. Both were checked against `redcanaryco/atomic-red-team` master on
-2026-06-08.
+2026-06-14.
 
 ## Windows (WIN-EP01)
 

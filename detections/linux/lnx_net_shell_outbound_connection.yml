@@ -1,0 +1,37 @@
+title: Outbound network connection made by a shell
+id: c3e6a9f4-5d78-4b03-9c24-8e3f4d9a6b12
+status: experimental
+description: >
+  Detects a shell, netcat or socat making an outbound network connection. A
+  shell opening a socket (for example through bash /dev/tcp) is a common
+  reverse-shell callback and is unusual on a server. Seen in the Log4Shell
+  dataset where the exploited host calls back to the attacker. T1059.004.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+author: mossyanwar
+date: 2026-06-14
+logsource:
+  product: linux
+  category: network_connection
+detection:
+  selection:
+    Image|endswith:
+      - '/bash'
+      - '/dash'
+      - '/sh'
+      - '/zsh'
+      - '/ksh'
+      - '/nc'
+      - '/ncat'
+      - '/netcat'
+      - '/socat'
+      - 'bash'
+  condition: selection
+falsepositives:
+  - Administrators sometimes use nc or socat for troubleshooting. Interactive
+    use by a human is easy to tell apart from an automated reverse shell by the
+    destination and timing.
+level: medium
+tags:
+  - attack.execution
+  - attack.t1059.004

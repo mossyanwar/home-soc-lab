@@ -1,0 +1,28 @@
+title: JSP file written by a Java process
+id: d4f7b0a5-6e89-4c14-9d35-9f4a5e0b7c13
+status: experimental
+description: >
+  Detects a Java process writing a .jsp file, which on a running application
+  server usually means a web shell was dropped (JSP pages are normally deployed
+  inside a war, not written at runtime by the JVM). Seen in the Spring4Shell
+  dataset. T1505.003.
+references:
+  - https://attack.mitre.org/techniques/T1505/003/
+author: mossyanwar
+date: 2026-06-14
+logsource:
+  product: linux
+  category: file_event
+detection:
+  selection:
+    Image|contains: 'java'
+    TargetFilename|endswith: '.jsp'
+  condition: selection
+falsepositives:
+  - A deployment or build step that unpacks JSPs onto disk through the JVM.
+    Baseline the paths your app server writes to; a .jsp appearing under a live
+    webapps directory outside a deployment is suspicious.
+level: high
+tags:
+  - attack.persistence
+  - attack.t1505.003
