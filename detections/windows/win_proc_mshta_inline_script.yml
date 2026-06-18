@@ -9,7 +9,7 @@ references:
   - https://attack.mitre.org/techniques/T1218/005/
   - https://lolbas-project.github.io/lolbas/Binaries/Mshta/
 author: mossyanwar
-date: 2026-06-14
+date: 2026-06-18
 logsource:
   product: windows
   category: process_creation

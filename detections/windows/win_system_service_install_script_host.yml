@@ -11,7 +11,7 @@ references:
   - https://attack.mitre.org/techniques/T1569/002/
   - https://attack.mitre.org/techniques/T1543/003/
 author: mossyanwar
-date: 2026-06-14
+date: 2026-06-18
 logsource:
   product: windows
   service: system

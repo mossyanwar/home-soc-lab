@@ -10,7 +10,7 @@ description: >
 references:
   - https://attack.mitre.org/techniques/T1548/002/
 author: mossyanwar
-date: 2026-06-14
+date: 2026-06-18
 logsource:
   product: windows
   category: registry_event

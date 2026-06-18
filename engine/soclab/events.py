@@ -145,11 +145,12 @@ def normalise_auditd(path: str) -> list[dict]:
 def _guess_format(path: str) -> str:
     lower = path.lower()
     if lower.endswith((".jsonl", ".json")):
-        # A sysmon syslog export is also .json; sniff the first useful line.
+        # A sysmon syslog export is also .json; sniff the first useful line,
+        # skipping blank lines and '#' provenance comments.
         with open(path, encoding="utf-8", errors="replace") as fh:
             for line in fh:
                 line = line.strip()
-                if not line:
+                if not line or line.startswith("#"):
                     continue
                 if '"SyslogMessage"' in line or line.startswith("<Event"):
                     return "sysmon-xml"
