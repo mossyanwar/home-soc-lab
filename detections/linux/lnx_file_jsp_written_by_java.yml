@@ -9,7 +9,7 @@ description: >
 references:
   - https://attack.mitre.org/techniques/T1505/003/
 author: mossyanwar
-date: 2026-06-14
+date: 2026-06-19
 logsource:
   product: linux
   category: file_event

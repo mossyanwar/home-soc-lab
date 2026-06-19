@@ -1,0 +1,5 @@
+# extracted from: splunk attack_data T1136.001/linux_auditd_add_user/linux_auditd_add_user.log
+# licence: MIT (OTRF) / Apache-2.0 (splunk). see data/README.md
+type=PROCTITLE msg=audit(1722950859.318:7037): proctitle=7375646F0075736572616464006D616C776172655F75736572
+type=PROCTITLE msg=audit(1722950859.314:7036): proctitle=75736572616464006D616C776172655F75736572
+type=PROCTITLE msg=audit(1722950859.314:7035): proctitle=75736572616464006D616C776172655F75736572

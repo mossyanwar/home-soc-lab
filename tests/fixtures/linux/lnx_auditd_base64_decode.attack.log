@@ -1,0 +1,5 @@
+# extracted from: splunk attack_data T1140/linux_auditd_base64/auditd_execve_base64.log
+# licence: MIT (OTRF) / Apache-2.0 (splunk). see data/README.md
+type=EXECVE msg=audit(02/20/2025 10:25:25.761:92634) : argc=3 a0=base64 a1=-d a2=enc.txt 
+type=EXECVE msg=audit(02/20/2025 10:24:52.272:92569) : argc=3 a0=base64 a1=-d a2=SGVsbG8sIFdvcmxkIQ== 
+type=EXECVE msg=audit(02/20/2025 10:23:43.724:92509) : argc=3 a0=base64 a1=-d a2=SGVsbG8sIFdvcmxkIQ== 

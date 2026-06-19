@@ -11,7 +11,7 @@ references:
   - https://attack.mitre.org/techniques/T1190/
   - https://attack.mitre.org/techniques/T1059/004/
 author: mossyanwar
-date: 2026-06-14
+date: 2026-06-19
 logsource:
   product: linux
   category: process_creation

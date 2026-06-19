@@ -298,6 +298,24 @@ def _selected_names(pattern: str | None, names: list[str]) -> list[str]:
     return [n for n in names if n == pattern]
 
 
+def _validate_ast(node, names: list[str]) -> None:
+    """Walk the whole condition AST and raise on any unknown selection name,
+    regardless of short-circuit evaluation."""
+    kind = node[0]
+    if kind == "id":
+        if node[1] not in names:
+            raise SigmaError(f"condition refers to unknown selection '{node[1]}'")
+    elif kind == "not":
+        _validate_ast(node[1], names)
+    elif kind in ("and", "or"):
+        _validate_ast(node[1], names)
+        _validate_ast(node[2], names)
+    elif kind == "quant":
+        _, _, _, pattern = node
+        if not _selected_names(pattern, names):
+            raise SigmaError(f"quantifier pattern '{pattern}' matches no selection")
+
+
 def _eval_condition(node, truths: dict[str, bool], names: list[str]) -> bool:
     kind = node[0]
     if kind == "id":
@@ -377,8 +395,9 @@ def load_rule(data: dict, path: str = "") -> Rule:
         path=path,
     )
     rule._ast = _CondParser(condition, list(selections.keys())).parse()
-    # Evaluate once against an empty event to surface condition errors early.
-    _eval_condition(rule._ast, {n: False for n in selections}, list(selections.keys()))
+    # Validate every referenced selection name now, rather than waiting for a
+    # short-circuited branch to be reached during matching.
+    _validate_ast(rule._ast, list(selections.keys()))
     return rule
 
 

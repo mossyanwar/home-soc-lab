@@ -1,0 +1,10 @@
+# extracted from: splunk attack_data T1136.001/linux_auditd_add_user/auditd_proctitle_user_add.log (grep hunting lines, not useradd)
+# licence: MIT (OTRF) / Apache-2.0 (splunk). see data/README.md
+type=PROCTITLE msg=audit(02/20/2025 10:02:51.145:89899) : proctitle=grep -EiH az login|enable_autologin|7z|unzip|useradd|linenum|linpeas|mkpasswd|htpasswd|openssl|PASSW|passw|shadow|roadrecon auth 
+type=PROCTITLE msg=audit(02/20/2025 10:00:24.898:44443) : proctitle=sudo useradd malware_user 
+type=PROCTITLE msg=audit(02/20/2025 10:00:24.814:44384) : proctitle=sudo useradd malware_user 
+type=PROCTITLE msg=audit(02/20/2025 10:00:24.814:44383) : proctitle=sudo useradd malware_user 
+type=PROCTITLE msg=audit(02/20/2025 10:00:24.813:44380) : proctitle=sudo useradd malware_user 
+type=PROCTITLE msg=audit(02/20/2025 10:00:24.808:44379) : proctitle=sudo useradd malware_user 
+type=PROCTITLE msg=audit(02/20/2025 10:00:24.808:44378) : proctitle=sudo useradd malware_user 
+type=PROCTITLE msg=audit(02/20/2025 10:00:24.808:44377) : proctitle=sudo useradd malware_user 
