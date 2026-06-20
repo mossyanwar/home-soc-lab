@@ -8,7 +8,7 @@ description: >
 references:
   - https://attack.mitre.org/techniques/T1140/
 author: mossyanwar
-date: 2026-06-19
+date: 2026-06-20
 logsource:
   product: linux
   service: auditd

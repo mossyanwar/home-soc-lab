@@ -10,7 +10,7 @@ references:
   - https://attack.mitre.org/techniques/T1003/001/
   - https://lolbas-project.github.io/lolbas/Libraries/comsvcs/
 author: mossyanwar
-date: 2026-06-19
+date: 2026-06-20
 logsource:
   product: windows
   category: process_creation
