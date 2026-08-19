@@ -9,7 +9,7 @@ description: >
 references:
   - https://attack.mitre.org/techniques/T1059/001/
 author: mossyanwar
-date: 2026-06-19
+date: 2026-08-19
 logsource:
   product: windows
   category: process_creation

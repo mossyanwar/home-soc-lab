@@ -1,0 +1,144 @@
+{
+  "name": "home-soc-lab coverage",
+  "versions": {
+    "attack": "14",
+    "navigator": "4.9.1",
+    "layer": "4.5"
+  },
+  "domain": "enterprise-attack",
+  "description": "Techniques covered by the Sigma rules in home-soc-lab, scored by number of rules.",
+  "techniques": [
+    {
+      "techniqueID": "T1003.001",
+      "score": 1,
+      "comment": "win_proc_lsass_dump_comsvcs.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1003.002",
+      "score": 1,
+      "comment": "win_proc_reg_save_credential_hives.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1003.003",
+      "score": 1,
+      "comment": "win_proc_ntds_dump.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1053.005",
+      "score": 1,
+      "comment": "win_proc_schtasks_create_script_host.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1059.001",
+      "score": 1,
+      "comment": "win_proc_powershell_encoded_command.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1059.004",
+      "score": 3,
+      "comment": "lnx_net_shell_outbound_connection.yml; lnx_proc_download_piped_to_shell.yml; lnx_proc_shell_spawned_by_java.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1098.004",
+      "score": 1,
+      "comment": "lnx_file_ssh_authorized_keys_write.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1105",
+      "score": 2,
+      "comment": "lnx_proc_download_piped_to_shell.yml; win_proc_bitsadmin_transfer.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1136.001",
+      "score": 1,
+      "comment": "lnx_auditd_useradd.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1140",
+      "score": 1,
+      "comment": "lnx_auditd_base64_decode.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1190",
+      "score": 1,
+      "comment": "lnx_proc_shell_spawned_by_java.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1197",
+      "score": 1,
+      "comment": "win_proc_bitsadmin_transfer.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1218.005",
+      "score": 1,
+      "comment": "win_proc_mshta_inline_script.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1218.010",
+      "score": 1,
+      "comment": "win_proc_regsvr32_scriptlet.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1505.003",
+      "score": 1,
+      "comment": "lnx_file_jsp_written_by_java.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1543.003",
+      "score": 1,
+      "comment": "win_system_service_install_script_host.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1546.003",
+      "score": 1,
+      "comment": "win_wmi_commandline_event_consumer.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1547.001",
+      "score": 1,
+      "comment": "win_reg_run_key_script_host.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1548.002",
+      "score": 1,
+      "comment": "win_reg_uac_bypass_shell_open_command.yml",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1569.002",
+      "score": 1,
+      "comment": "win_system_service_install_script_host.yml",
+      "enabled": true
+    }
+  ],
+  "gradient": {
+    "colors": [
+      "#d4e8ff",
+      "#1f6feb"
+    ],
+    "minValue": 0,
+    "maxValue": 2
+  },
+  "legendItems": [],
+  "showTacticRowBackground": false,
+  "sorting": 0,
+  "hideDisabled": false
+}
