@@ -34,6 +34,7 @@ SPLUNK = "https://media.githubusercontent.com/media/splunk/attack_data/master/da
 GROUPS: dict[str, list[tuple[str, str]]] = {
     "windows-core": [
         ("otrf-zip", "atomic/windows/credential_access/host/psh_lsass_memory_dump_comsvcs.zip"),
+        ("otrf-zip", "compound/LSASS_campaign_03/metasploit_comsvcs_lsass_memory_dump.zip"),
         ("otrf-zip", "atomic/windows/credential_access/host/cmd_dumping_ntds_dit_file_ntdsutil.zip"),
         ("otrf-zip", "atomic/windows/credential_access/host/cmd_dumping_ntds_dit_file_volume_shadow_copy.zip"),
         ("otrf-zip", "atomic/windows/credential_access/host/empire_shell_reg_dump_sam.zip"),

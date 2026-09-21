@@ -9,7 +9,7 @@ references:
   - https://attack.mitre.org/techniques/T1197/
   - https://lolbas-project.github.io/lolbas/Binaries/Bitsadmin/
 author: mossyanwar
-date: 2026-08-19
+date: 2026-09-22
 logsource:
   product: windows
   category: process_creation
