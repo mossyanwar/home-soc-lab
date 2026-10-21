@@ -143,3 +143,7 @@ This repo is MIT (`LICENSE`). It builds on, and credits in place:
 - Datasets: OTRF/Security-Datasets (MIT) and splunk/attack_data (Apache-2.0);
   see `data/README.md` and `tests/fixtures/SOURCES.md`.
 - Rule conversion uses pySigma and its Splunk/Elasticsearch backends.
+
+---
+
+Developed locally in May to June 2026 and published to GitHub in October 2026.
